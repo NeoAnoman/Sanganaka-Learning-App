@@ -65,12 +65,13 @@ export default function AllQuestions(props) {
         setRefreshing(false);
     }
     
-    const fetchquestions = () => {
+    const fetchquestions = () => { // function to fetch latest 20 questions in descending order of date they were posted on
         var art=[];
-        db.collection('questions').orderBy('date', 'desc').limit(20).get().then(async (snapshot)=> {
-            if(snapshot.docs.length) {
+        db.collection('questions').orderBy('date', 'desc').limit(20).get().then(async (snapshot)=> { //fetching top 20 questions in descending order from the database
+            if(snapshot.docs.length) { // checking if database is not empty...
                 art = await Promise.all(snapshot.docs.map(async (doc) => {
                     await db.collection('users').where('phno', '==', doc.data().mobile).get().then((snapshot)=> {
+                        //firebase firestore query is used here to get the user information from the database
                         art={
                                 question: doc.data().question,
                                 qid: doc.data().qid,
@@ -94,12 +95,14 @@ export default function AllQuestions(props) {
             }
         })
         .then (()=> {
-            updateArt(art)
+            updateArt(art) // the question state is updated here so that component will refresh and shows the updated data
         })
         .catch((err)=> {
             console.log(err);
         })
     }
+
+    
     const fetchMorequestions = () => {
         if(!reachedEnd && !loading) {
             setLoading(true);

@@ -19,14 +19,16 @@ export default function questionDisp(props) {
     let [tick, updateTick] = React.useState({});
 
     const Answers = (props) => {
-        const fetchAnswers = async () => {
-            updateFetch(false);
+        const fetchAnswers = async () => { // This function will fetch all the answers of the selected question and place the correct answer at top of all other answers
+            updateFetch(false); // The loader would be shown whenever (fetch = fasle)
+            //loader would show that property is getting fetched
             var user= {
                 initialInfo: 'initial property'
             };
             var main= [];
-            await db.collection('answers').where('qid', '==', props.ques.qid).get().then(async (snapshot)=> {
+            await db.collection('answers').where('qid', '==', props.ques.qid).get().then(async (snapshot)=> { // fetching answers according to question id
                 main = snapshot.docs[0]?await Promise.all(snapshot.docs[0].data().username_and_answers.map(async (data)=> {
+                    // information regarding user and their respected answer is fetched and stored here
                     await db.collection('users').where('phno', '==', data.mobile).get().then((snapshot)=> {
                         user= {
                             dob: snapshot.docs[0].data().dob,
@@ -54,7 +56,8 @@ export default function questionDisp(props) {
                 if(main) {
                     for(var i=0; i<main.length; i++) {
                         if(main[i].selected) {
-
+                            // if the answer is selected as correct then place it on the top of array
+                            // so that while displaying all answers later the correct answer is shown first.
                             var temp2 = {};
                             temp2[main[i].created] = true;
                             updateTick(temp2);
